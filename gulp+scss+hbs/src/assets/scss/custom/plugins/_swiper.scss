@@ -1,0 +1,30 @@
+.swiper-container {
+    .swiper-button-next{
+        &::after{
+            content: unset;
+        }
+    }
+    .swiper-button-prev{
+        &::after{
+            content: unset;
+        }
+    }
+}
+
+.scale-item-slider {
+    .swiper-slide.swiper-slide-next {
+        transform: scale(0);
+        opacity: 0;
+        transition: all 600ms ease;
+    }
+    .swiper-slide.swiper-slide-prev {
+        transform: scale(0);
+        opacity: 0;
+        transition: all 600ms ease;
+    }
+    .swiper-slide.swiper-slide-active {
+        transform: scale(1);
+        opacity: 1;
+        transition: all 600ms ease;
+    }
+}

@@ -1,0 +1,15 @@
+.apexcharts-radialbar-area {
+    stroke-linecap: round;
+}
+.rounded-bar-chart {
+    .apexcharts-bar-series.apexcharts-plot-series  .apexcharts-series path {
+        clip-path: inset(4% 30% 1% 10% round 1rem);
+    }
+}
+.custom-radial-chart {
+    .apexcharts-radialbar-track {
+        .apexcharts-radialbar-area {
+            stroke-width: 5px;
+        }
+    }
+}

@@ -1,0 +1,84 @@
+// Sidebar Item All Side Rounded (50rem)
+.navs-shape {
+  &.sidebar-mini {
+      .sidebar-body {
+          padding-right: 1rem;
+      }
+      @include sidebar-nav-item-varients(false, .625rem .75rem);
+      @include sidebar-nav-item-start-spaceing(0) {
+        .sub-nav{
+          .nav-item {
+            margin-left: 0;
+          }
+        }
+      }
+  }
+  .sidebar-body {
+      padding-right: 1rem;
+  }
+  //default spacing 1rem by default $spacer
+  @include sidebar-nav-item-start-spaceing(0) {
+    .sub-nav{
+      .nav-item {
+        margin-left: $spacer;
+        .nav-link {
+          &.active {
+            font-weight: $font-weight-bold;
+            background: transparent;
+            color:$primary;
+            &:before, &:after {
+              content: unset;
+            }
+            span {
+              transform: translateX(4px);
+            }
+          }
+        }
+      }
+    }
+  }
+  @include sidebar-nav-item-varients(false) {
+      &.active,&[aria-expanded=true]{
+        position: relative;
+        box-shadow: unset;
+        @include sidebar-nav-item-left-shape;
+      }
+      @if $enable-rounded == true {
+          border-radius: $border-radius-sm;
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+      }
+  }
+}
+
+// sidebar color mixins
+.sidebar-color{
+  .navs-shape {
+    &.sidebar-mini {
+        .sidebar-body {
+            padding-right: 1rem;
+        }
+        @include sidebar-nav-item-varients(false, .625rem .75rem);
+        @include sidebar-nav-item-start-spaceing(0) {
+          .sub-nav{
+            .nav-item {
+              margin-left: 0;
+            }
+          }
+        }
+    }
+  }
+
+  @include sidebar-nav-item-varients(false) {
+    &.active,&[aria-expanded=true]{
+      position: relative;
+      box-shadow: unset;
+      @include sidebar-nav-item-left-shape-color;
+    }
+    @if $enable-rounded == true {
+        border-radius: $border-radius-sm;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+}
+}

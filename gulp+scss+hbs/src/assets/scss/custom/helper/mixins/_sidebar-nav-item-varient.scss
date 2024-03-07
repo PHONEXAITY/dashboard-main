@@ -1,0 +1,102 @@
+// Parameters should be boolean
+// True parameters form navitem with :not(.disabled) selector
+@mixin nav-item($not-disabled-content: true) {
+  .navbar-nav {
+      .nav-item {
+          .nav-link {
+              @if $not-disabled-content == true {
+                  &:not(.disabled) {
+                      @content;
+                  }
+              } @else {
+                  @content;
+              }
+
+          }
+      }
+  }
+}
+@mixin sidebar-nav-item-varients($padding-left: false,$item-padding: .625rem 1rem) {
+  .navbar-nav {
+      .nav-item {
+          .nav-link {
+              padding: $item-padding;
+              @if $padding-left == true {
+                  padding-left: 1.25rem;
+              }
+              &:not(.disabled) {
+                  @content;
+              }
+          }
+      }
+  }
+}
+
+@mixin sidebar-item-color-varients($color, $bg-color) {
+  @content;
+  background-color: $bg-color;
+  color: $color;
+  @if $enable-shadows == true {
+      box-shadow: $navbar-vertical-active-shadow;
+  }
+  &:hover {
+      @if $enable-shadows == true {
+          box-shadow: $navbar-vertical-hover-shadow;
+      }
+  }
+}
+
+
+@mixin sidebar-nav-item-hover($bg-color) {
+  background-color: rgba($bg-color,.1);
+  color: $bg-color;
+  .collapsed+.sub-nav {
+      @content;
+  }
+}
+
+@mixin sidebar-nav-item-start-spaceing($padding: $spacer) {
+  .navbar-nav{
+      .nav-item {
+          &:not(.static-item) {
+              padding-left:$padding;
+              @content;
+          }
+      }
+  }
+}
+
+
+@mixin sidebar-nav-item-left-shape {
+  &::after{
+    content: escape-svg(url('data:image/svg+xml,<svg width="32"  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 16H16C12 16 8 13 8 8V16Z" fill="#4A3144"/></svg>'));
+    position: absolute;
+    bottom: -27px;
+    left: -13px;
+    transform: rotate(90deg) scale(1.5);
+  }
+  &::before{
+    content:escape-svg(url('data:image/svg+xml,<svg width="32"  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 16H16C12 16 8 13 8 8V16Z" fill="#4A3144"/></svg>'));
+    top:-22px;
+    left: -8px;
+    position: absolute;
+    transform: scale(1.5);
+  }
+}
+
+@mixin sidebar-nav-item-left-shape-color {
+    &::after{
+      content: escape-svg(url('data:image/svg+xml,<svg width="32"  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 16H16C12 16 8 13 8 8V16Z" fill="#ffffff"/></svg>'));
+      position: absolute;
+      bottom: -27px;
+      left: -13px;
+      transform: rotate(90deg) scale(1.5);
+    }
+    &::before{
+      content:escape-svg(url('data:image/svg+xml,<svg width="32"  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 16H16C12 16 8 13 8 8V16Z" fill="#ffffff"/></svg>'));
+      top:-22px;
+      left: -8px;
+      position: absolute;
+      transform: scale(1.5);
+    }
+  }

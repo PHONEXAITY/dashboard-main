@@ -1,0 +1,36 @@
+.card-slide{
+    height: auto;
+    .circle-progress svg {
+        .circle-progress-text{
+            display: none;
+        }
+
+    }
+}
+.custom-circle{
+    position: relative;
+    .custome-circle-content{
+        position: absolute;
+        bottom: 28%;
+        right: 28%;
+    }
+    .circle-progress-text{
+        display: none;
+    }
+
+}
+@include media-breakpoint-only(lg){
+    .custom-circle{
+        .custome-circle-content{
+            right: 36%;
+        }
+    }
+}
+@include media-breakpoint-down(lg) { 
+    .custom-circle{
+        .custome-circle-content{
+            right: 36%;
+        }
+    }
+
+ }
