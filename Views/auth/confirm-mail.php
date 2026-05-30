@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>TecDig | Responsive Bootstrap 5 Admin Dashboard Template</title>
+    <title>Cafe Management System</title>
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="../../assets/images/favicon.ico" />
@@ -27,31 +27,25 @@
                 <div class="col-md-6 p-0">
                     <div class="card card-transparent auth-card shadow-none d-flex justify-content-center mb-0">
                         <div class="card-body text-center">
-                            <a href="../../dashboard/index.html" class="navbar-brand d-flex align-items-center mb-3">
+                            <a href="../index.php" class="navbar-brand d-flex align-items-center mb-3">
                                 <!--Logo start-->
-                                <img src="../../assets/images/logo.svg" class="sidebar-color-logo  ">
+                                <img src="../../assets/logo.png" class="sidebar-color-logo  " width="95">
                                 <!--logo End-->
-                                <h3 class="logo-title ms-2 text-primary">TecDig</h3>
+                                <h3 class="logo-title ms-2 text-primary">Cafe I&U</h3>
                             </a>
-                            <img src="../../assets/images/avatars/01.png" class="rounded avatar-80 mb-3" alt="">
-                            <h2 class="mb-2">Hi ! Austin Robertson</h2>
-                            <p>Enter your password to access the admin.</p>
-                            <form>
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="floating-label form-group text-start">
-                                            <label for="password" class="form-label">Password</label>
-                                            <input type="password" class="form-control" id="password" aria-describedby="password" placeholder=" ">
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Login</button>
-                            </form>
+                            <img src="../../assets/images/auth/06.png" class="img-fluid" width="80" alt="">
+                            <h1 class="mt-3 mb-0 fw-bold mb-3">Success !</h1>
+                            <p class="cnf-mail mb-1">A email has been send to youremail@domain.com. Please check for an
+                                email from company and click
+                                on the included link to reset your password.</p>
+                            <div class="d-inline-block w-100">
+                                <a href="../index.php" class="btn btn-primary mt-3">Back to Home</a>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 d-flex d-md-block d-none  justify-content-center bg-soft-secondary p-0 mt-n1 vh-100 overflow-hidden">
-                    <img src="../../assets/images/auth/05.png" class="img-fluid" alt="images">
+                    <img src="../../assets/images/auth/03.png" class="img-fluid" alt="images">
                 </div>
             </div>
         </section>

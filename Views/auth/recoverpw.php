@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>TecDig | Responsive Bootstrap 5 Admin Dashboard Template</title>
+    <title>Cafe Management System</title>
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="../../assets/images/favicon.ico" />
@@ -29,9 +29,9 @@
                         <div class="card-body text-center">
                             <a href="../../dashboard/index.html" class="navbar-brand d-flex align-items-center mb-3">
                                 <!--Logo start-->
-                                <img src="../../assets/images/logo.svg" class="sidebar-color-logo  ">
+                                <img src="../../assets/logo.png" class="sidebar-color-logo  " width="95">
                                 <!--logo End-->
-                                <h3 class="logo-title ms-2 text-primary">TecDig</h3>
+                                <h3 class="logo-title ms-2 text-primary">Cafe I&U</h3>
                             </a>
                             <h2 class="mb-2">Reset Password</h2>
                             <p>Enter your email address and we'll send you an email with instructions to reset your password.</p>
@@ -39,12 +39,12 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="floating-label form-group text-start">
-                                            <label for="email" class="form-label">Email</label>
+                                            <label for="email" class="form-label ">Email</label>
                                             <input type="email" class="form-control" id="email" aria-describedby="email" placeholder=" ">
                                         </div>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Reset</button>
+                          <button type="button" onclick="window.location.href='./confirm-mail.php'" class="btn btn-primary">Reset</button>
                             </form>
                         </div>
                     </div>

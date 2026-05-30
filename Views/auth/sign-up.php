@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>TecDig | Responsive Bootstrap 5 Admin Dashboard Template</title>
+    <title>Cafe Management System</title>
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="../../assets/images/favicon.ico" />
@@ -31,9 +31,9 @@
                                 <div class="card-body">
                                     <a href="../../dashboard/index.html" class="navbar-brand d-flex align-items-center mb-3">
                                         <!--Logo start-->
-                                        <img src="../../assets/images/logo.svg" class="sidebar-color-logo  ">
+                                        <img src="../../assets/logo.png" class="sidebar-color-logo " width="80">
                                         <!--logo End-->
-                                        <h3 class="logo-title ms-2 text-primary">TecDig</h3>
+                                        <h3 class="logo-title ms-2 text-primary">Cafe I&U</h3>
                                     </a>
                                     <h2 class="mb-2 text-center">Sign Up</h2>
                                     <p class="text-center">Create your TecDig account.</p>
@@ -103,7 +103,7 @@
                                             </ul>
                                         </div>
                                         <p class="mt-3 text-center">
-                                            Already have an Account <a href="sign-in.html" class="text-underline">Sign In</a>
+                                            Already have an Account <a href="../index.php" class="text-underline">Sign In</a>
                                         </p>
                                     </form>
                                 </div>

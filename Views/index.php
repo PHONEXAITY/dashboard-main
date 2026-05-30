@@ -4,12 +4,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>TecDig | Responsive Bootstrap 5 Admin Dashboard Template</title>
+    <title>Cafe Management System</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="../../assets/images/favicon.ico" />
-    <link rel="stylesheet" href="../../assets/css/libs.min.css">
-    <link rel="stylesheet" href="../../assets/css/tecdig.css?v=1.0.0">
+    <link rel="shortcut icon" href="../assets/images/favicon.ico" />
+    <link rel="stylesheet" href="../assets/css/libs.min.css">
+    <link rel="stylesheet" href="../assets/css/tecdig.css?v=1.0.0">
 </head>
 
 <body class=" " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
@@ -29,11 +29,11 @@
                         <div class="col-md-10">
                             <div class="card card-transparent shadow-none d-flex justify-content-center mb-0 auth-card">
                                 <div class="card-body">
-                                    <a href="../../dashboard/index.html" class="navbar-brand d-flex align-items-center mb-3">
+                                    <a href="#" class="navbar-brand d-flex align-items-center mb-3">
                                         <!--Logo start-->
-                                        <img src="../../assets/images/logo.svg" class="sidebar-color-logo  ">
+                                        <img src="../assets/logo.png" class="sidebar-color-logo  " width="80">
                                         <!--logo End-->
-                                        <h3 class="logo-title ms-2 text-primary">TecDig</h3>
+                                        <h3 class="logo-title ms-2 text-primary">Cafe I&U</h3>
                                     </a>
                                     <h2 class="mb-2 text-center">Sign In</h2>
                                     <p class="text-center">Login to stay connected.</p>
@@ -56,31 +56,31 @@
                                                     <input type="checkbox" class="form-check-input" id="customCheck1">
                                                     <label class="form-check-label" for="customCheck1">Remember Me</label>
                                                 </div>
-                                                <a href="recoverpw.html">Forgot Password?</a>
+                                                <a href="../Views/auth/recoverpw.php">Forgot Password?</a>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-center">
-                                            <button type="submit" class="btn btn-primary">Sign In</button>
+                                            <button type="submit" onclick="window.location.href='./main.php'" class="btn btn-primary">Sign In</button>
                                         </div>
                                         <p class="text-center my-3">or sign in with other accounts?</p>
                                         <div class="d-flex justify-content-center">
                                             <ul class="list-group list-group-horizontal list-group-flush">
                                                 <li class="list-group-item border-0 pb-0">
-                                                    <a href="#"><img src="../../assets/images/brands/fb.svg" alt="fb"></a>
+                                                    <a href="#"><img src="../assets/images/brands/fb.svg" alt="fb"></a>
                                                 </li>
                                                 <li class="list-group-item border-0 pb-0">
-                                                    <a href="#"><img src="../../assets/images/brands/gm.svg" alt="gm"></a>
+                                                    <a href="#"><img src="../assets/images/brands/gm.svg" alt="gm"></a>
                                                 </li>
                                                 <li class="list-group-item border-0 pb-0">
-                                                    <a href="#"><img src="../../assets/images/brands/im.svg" alt="im"></a>
+                                                    <a href="#"><img src="../assets/images/brands/im.svg" alt="im"></a>
                                                 </li>
                                                 <li class="list-group-item border-0 pb-0">
-                                                    <a href="#"><img src="../../assets/images/brands/li.svg" alt="li"></a>
+                                                    <a href="#"><img src="../assets/images/brands/li.svg" alt="li"></a>
                                                 </li>
                                             </ul>
                                         </div>
                                         <p class="mt-3 text-center">
-                                            Don’t have an account? <a href="sign-up.html" class="text-underline">Click here to sign up.</a>
+                                            Don’t have an account? <a href="./auth/sign-up.php" class="text-underline">Click here to sign up.</a>
                                         </p>
                                     </form>
                                 </div>
@@ -89,27 +89,27 @@
                     </div>
                 </div>
                 <div class="col-md-6 d-flex d-md-block d-none  justify-content-center bg-soft-secondary p-0 mt-n1 vh-100">
-                    <img src="../../assets/images/auth/01.png" class="img-fluid" alt="images">
+                    <img src="../assets/images/auth/01.png" class="img-fluid" alt="images">
                 </div>
             </div>
         </section>
     </div>
 
     <!-- Backend Bundle JavaScript -->
-    <script src="../../assets/js/libs.min.js"></script>
+    <script src="../assets/js/libs.min.js"></script>
     <!-- widgetchart JavaScript -->
-    <script src="../../assets/js/charts/widgetcharts.js"></script>
+    <script src="../assets/js/charts/widgetcharts.js"></script>
     <!-- mapchart JavaScript -->
-    <script src="../../assets/js/charts/vectore-chart.js"></script>
-    <script src="../../assets/js/charts/dashboard.js"></script>
+    <script src="../assets/js/charts/vectore-chart.js"></script>
+    <script src="../assets/js/charts/dashboard.js"></script>
     <!-- fslightbox JavaScript -->
-    <script src="../../assets/js/fslightbox.js"></script>
+    <script src="../assets/js/fslightbox.js"></script>
     <!-- settings JavaScript -->
-    <script src="../../assets/js/setting.js"></script>
+    <script src="../assets/js/setting.js"></script>
     <!-- Form Wizard Script -->
-    <script src="../../assets/js/form-wizard.js"></script>
+    <script src="../assets/js/form-wizard.js"></script>
     <!-- app JavaScript -->
-    <script src="../../assets/js/app.js"></script>
+    <script src="../assets/js/app.js"></script>
 
 </body>
 
