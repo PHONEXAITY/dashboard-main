@@ -1,283 +1,198 @@
-<div class="conatiner-fluid content-inner mt-5 py-0" style="font-family: Noto Sans Lao;">
-            <div class="row">
-                <!-- left -->
-                <div class="col-md-12 col-lg-8">
-                    <div class="row">
-                        <!-- Data status -->
-                        <!-- data analysis graph-->
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header d-flex justify-content-between flex-wrap">
-                                    <div class="header-title">
-                                        <h4 class="card-title">ແນວໂນ້ມການຂາຍ</h4>
-                                    </div>
-                                    <div class="d-flex align-items-center align-self-center">
-                                        <div class="d-flex align-items-center text-primary">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" viewBox="0 0 24 24" fill="currentColor">
-                                                <g>
-                                                    <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                                </g>
-                                            </svg>
-                                            <div class="ms-2">
-                                                <span>ຍອດຂາຍ</span>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex align-items-center ms-3 text-secondary">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" viewBox="0 0 24 24" fill="currentColor">
-                                                <g>
-                                                    <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                                </g>
-                                            </svg>
-                                            <div class="ms-2">
-                                                <span>ລາຍໄດ້</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div id="d-main" class="d-main"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Top Selling -->
-                        <div class="col-md-12 col-lg-12">
-                            <div class="card overflow-hidden">
-                                <div class="card-header d-flex justify-content-between flex-wrap">
-                                    <div class="header-title">
-                                        <h4 class="card-title mb-2">Top Selling Items</h4>
-                                    </div>
-                                    <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
-                                        <input type="checkbox" class="btn-check" id="btncheck1">
-                                        <label class="btn btn-outline-primary" for="btncheck1">Today</label>
+<?php
+require_once __DIR__ . '/../includes/auth.php';
+global $connect;
 
-                                        <input type="checkbox" class="btn-check" id="btncheck2">
-                                        <label class="btn btn-outline-primary" for="btncheck2">This Week</label>
+$today = date('Y-m-d');
+$monthStart = date('Y-m-01');
 
-                                        <input type="checkbox" class="btn-check" id="btncheck3">
-                                        <label class="btn btn-outline-primary" for="btncheck3">This Month</label>
-                                    </div>
-                                </div>
-                                <div class="card-body p-0">
-                                    <div class="table-responsive mt-4">
-                                        <table id="basic-table" class="table table-striped mb-0 transactions-table" role="grid">
-                                            <thead>
-                                                <tr>
-                                                    <th>ສິນຄ້າ</th>
-                                                    <th>ຄວາມປະທັບໃຈ</th>
-                                                    <th>ຜູ້ເຂົ້າຊົມ</th>
-                                                    <th>ຄະແນນລີວິວ</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <img class="img-fluid me-3" src="../assets/images/pages/01.png" alt="profile">
-                                                            <h6>Addidis Sportwear</h6>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        927937
-                                                    </td>
-                                                    <td>45,332</td>
-                                                    <td>
-                                                        <div class="d-flex align-items-center mb-2">
-                                                            <h6>60%</h6>
-                                                        </div>
-                                                        <div class="progress w-100" style="height: 8px">
-                                                            <div class="progress-bar bg-primary" data-toggle="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+$q1 = $connect->query("SELECT COALESCE(SUM(total),0) v, COUNT(*) c FROM sales WHERE DATE(created_at) = '$today'");
+$today_data = $q1->fetch_assoc();
+$q2 = $connect->query("SELECT COALESCE(SUM(total),0) v, COUNT(*) c FROM sales WHERE DATE(created_at) >= '$monthStart'");
+$month_data = $q2->fetch_assoc();
+$q3 = $connect->query("SELECT COUNT(*) c FROM products WHERE status=1");
+$prod_count = (int)$q3->fetch_assoc()['c'];
+$q4 = $connect->query("SELECT COUNT(*) c FROM products WHERE status=1 AND stock <= low_stock_threshold");
+$low_count = (int)$q4->fetch_assoc()['c'];
+
+$daily = [];
+for ($i = 6; $i >= 0; $i--) {
+    $d = date('Y-m-d', strtotime("-$i day"));
+    $r = $connect->query("SELECT COALESCE(SUM(total),0) v FROM sales WHERE DATE(created_at) = '$d'");
+    $daily[] = ['date' => $d, 'value' => (float)$r->fetch_assoc()['v']];
+}
+$chartLabels = array_map(fn($d) => date('d/m', strtotime($d['date'])), $daily);
+$chartValues = array_map(fn($d) => $d['value'], $daily);
+
+$topRes = $connect->query("SELECT product_name, SUM(qty) total_qty, SUM(subtotal) total_revenue
+    FROM sale_items si JOIN sales s ON s.id = si.sale_id
+    WHERE DATE(s.created_at) >= '$monthStart'
+    GROUP BY product_name ORDER BY total_qty DESC LIMIT 7");
+?>
+<?php flash_banner(); ?>
+<div class="row g-3">
+    <div class="col-md-6 col-lg-3">
+        <div class="card stat-card primary">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box">
+                        <svg width="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v8H3v-8zm4-5h2v13H7V8zm4-3h2v16h-2V5zm4 6h2v10h-2V11zm4-4h2v14h-2V7z"/></svg>
                     </div>
-                </div>
-                <!-- right -->
-                <div class="col-md-12 col-lg-4">
-                    <div class="row">
-                        <div class="col-md-12 col-lg-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex align-itmes-center   mb-4">
-                                        <div class="d-flex align-itmes-center me-0 me-md-4">
-                                            <div>
-                                                <div class="p-2 rounded bg-soft-primary">
-                                                    <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M16.9303 7C16.9621 6.92913 16.977 6.85189 16.9739 6.77432H17C16.8882 4.10591 14.6849 2 12.0049 2C9.325 2 7.12172 4.10591 7.00989 6.77432C6.9967 6.84898 6.9967 6.92535 7.00989 7H6.93171C5.65022 7 4.28034 7.84597 3.88264 10.1201L3.1049 16.3147C2.46858 20.8629 4.81062 22 7.86853 22H16.1585C19.2075 22 21.4789 20.3535 20.9133 16.3147L20.1444 10.1201C19.676 7.90964 18.3503 7 17.0865 7H16.9303ZM15.4932 7C15.4654 6.92794 15.4506 6.85153 15.4497 6.77432C15.4497 4.85682 13.8899 3.30238 11.9657 3.30238C10.0416 3.30238 8.48184 4.85682 8.48184 6.77432C8.49502 6.84898 8.49502 6.92535 8.48184 7H15.4932ZM9.097 12.1486C8.60889 12.1486 8.21321 11.7413 8.21321 11.2389C8.21321 10.7366 8.60889 10.3293 9.097 10.3293C9.5851 10.3293 9.98079 10.7366 9.98079 11.2389C9.98079 11.7413 9.5851 12.1486 9.097 12.1486ZM14.002 11.2389C14.002 11.7413 14.3977 12.1486 14.8858 12.1486C15.3739 12.1486 15.7696 11.7413 15.7696 11.2389C15.7696 10.7366 15.3739 10.3293 14.8858 10.3293C14.3977 10.3293 14.002 10.7366 14.002 11.2389Z" fill="currentColor"></path>
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                            <div class="ms-3">
-                                                <h5>1153</h5>
-                                                <small class="mb-0">ສິນຄ້າທັງຫມົດ</small>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex align-itmes-center">
-                                            <div>
-                                                <div class="p-2 rounded bg-soft-success">
-                                                    <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M14.1213 11.2331H16.8891C17.3088 11.2331 17.6386 10.8861 17.6386 10.4677C17.6386 10.0391 17.3088 9.70236 16.8891 9.70236H14.1213C13.7016 9.70236 13.3719 10.0391 13.3719 10.4677C13.3719 10.8861 13.7016 11.2331 14.1213 11.2331ZM20.1766 5.92749C20.7861 5.92749 21.1858 6.1418 21.5855 6.61123C21.9852 7.08067 22.0551 7.7542 21.9652 8.36549L21.0159 15.06C20.8361 16.3469 19.7569 17.2949 18.4879 17.2949H7.58639C6.25742 17.2949 5.15828 16.255 5.04837 14.908L4.12908 3.7834L2.62026 3.51807C2.22057 3.44664 1.94079 3.04864 2.01073 2.64043C2.08068 2.22305 2.47038 1.94649 2.88006 2.00874L5.2632 2.3751C5.60293 2.43735 5.85274 2.72207 5.88272 3.06905L6.07257 5.35499C6.10254 5.68257 6.36234 5.92749 6.68209 5.92749H20.1766ZM7.42631 18.9079C6.58697 18.9079 5.9075 19.6018 5.9075 20.459C5.9075 21.3061 6.58697 22 7.42631 22C8.25567 22 8.93514 21.3061 8.93514 20.459C8.93514 19.6018 8.25567 18.9079 7.42631 18.9079ZM18.6676 18.9079C17.8282 18.9079 17.1487 19.6018 17.1487 20.459C17.1487 21.3061 17.8282 22 18.6676 22C19.4969 22 20.1764 21.3061 20.1764 20.459C20.1764 19.6018 19.4969 18.9079 18.6676 18.9079Z" fill="currentColor"></path>
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                            <div class="ms-3">
-                                                <h5>81K</h5>
-                                                <small class="mb-0">ລາຍການສັ່ງຊື້</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mb-4">
-                                        <div class="d-flex justify-content-between flex-wrap">
-                                            <h2 class="mb-2">$405,012,300</h2>
-                                            <div>
-                                                <span class="badge bg-success p-2 px-4">YoY 24%</span>
-                                            </div>
-                                        </div>
-                                        <p>ຍອດຂາຍທັງໝົດ</p>
-                                    </div>
-                                    <div class="d-grid grid-cols-2 gap">
-                                        <a href="#" class="btn btn-primary d-flex justify-content-center align-items-center">
-                                            <svg width="20" class="text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M16.9303 7C16.9621 6.92913 16.977 6.85189 16.9739 6.77432H17C16.8882 4.10591 14.6849 2 12.0049 2C9.325 2 7.12172 4.10591 7.00989 6.77432C6.9967 6.84898 6.9967 6.92535 7.00989 7H6.93171C5.65022 7 4.28034 7.84597 3.88264 10.1201L3.1049 16.3147C2.46858 20.8629 4.81062 22 7.86853 22H16.1585C19.2075 22 21.4789 20.3535 20.9133 16.3147L20.1444 10.1201C19.676 7.90964 18.3503 7 17.0865 7H16.9303ZM15.4932 7C15.4654 6.92794 15.4506 6.85153 15.4497 6.77432C15.4497 4.85682 13.8899 3.30238 11.9657 3.30238C10.0416 3.30238 8.48184 4.85682 8.48184 6.77432C8.49502 6.84898 8.49502 6.92535 8.48184 7H15.4932ZM9.097 12.1486C8.60889 12.1486 8.21321 11.7413 8.21321 11.2389C8.21321 10.7366 8.60889 10.3293 9.097 10.3293C9.5851 10.3293 9.98079 10.7366 9.98079 11.2389C9.98079 11.7413 9.5851 12.1486 9.097 12.1486ZM14.002 11.2389C14.002 11.7413 14.3977 12.1486 14.8858 12.1486C15.3739 12.1486 15.7696 11.7413 15.7696 11.2389C15.7696 10.7366 15.3739 10.3293 14.8858 10.3293C14.3977 10.3293 14.002 10.7366 14.002 11.2389Z" fill="currentColor"></path>
-                                            </svg>
-                                            <span class="ms-2">View</span>
-                                        </a>
-                                        <a href="#" class="btn btn-secondary d-flex justify-content-center align-items-center">
-                                            <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.1213 11.2331H16.8891C17.3088 11.2331 17.6386 10.8861 17.6386 10.4677C17.6386 10.0391 17.3088 9.70236 16.8891 9.70236H14.1213C13.7016 9.70236 13.3719 10.0391 13.3719 10.4677C13.3719 10.8861 13.7016 11.2331 14.1213 11.2331ZM20.1766 5.92749C20.7861 5.92749 21.1858 6.1418 21.5855 6.61123C21.9852 7.08067 22.0551 7.7542 21.9652 8.36549L21.0159 15.06C20.8361 16.3469 19.7569 17.2949 18.4879 17.2949H7.58639C6.25742 17.2949 5.15828 16.255 5.04837 14.908L4.12908 3.7834L2.62026 3.51807C2.22057 3.44664 1.94079 3.04864 2.01073 2.64043C2.08068 2.22305 2.47038 1.94649 2.88006 2.00874L5.2632 2.3751C5.60293 2.43735 5.85274 2.72207 5.88272 3.06905L6.07257 5.35499C6.10254 5.68257 6.36234 5.92749 6.68209 5.92749H20.1766ZM7.42631 18.9079C6.58697 18.9079 5.9075 19.6018 5.9075 20.459C5.9075 21.3061 6.58697 22 7.42631 22C8.25567 22 8.93514 21.3061 8.93514 20.459C8.93514 19.6018 8.25567 18.9079 7.42631 18.9079ZM18.6676 18.9079C17.8282 18.9079 17.1487 19.6018 17.1487 20.459C17.1487 21.3061 17.8282 22 18.6676 22C19.4969 22 20.1764 21.3061 20.1764 20.459C20.1764 19.6018 19.4969 18.9079 18.6676 18.9079Z" fill="currentColor"></path>
-                                            </svg>
-                                            <span class="ms-2">View</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-lg-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="header-title">
-                                        <h4 class="card-title">ການເຄື່ອນໄຫວ (ມື້ນີ້)</h4>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <ul class="list-inline">
-                                        <li class="d-flex mb-4 align-items-center">
-                                            <a href="#" class="text-secondary p-2 bg-soft-secondary avatar-40">
-                                                <svg width="21" viewBox="0 0 25 25" fill="currentcolor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M12.5 0C5.6075 0 0 5.6075 0 12.5C0 19.3925 5.6075 25 12.5 25C19.3925 25 25 19.3925 25 12.5C25 5.6075 19.3925 0 12.5 0ZM2.5 12.5C2.5 11.3763 2.695 10.2975 3.03875 9.28875L5 11.25L7.5 13.75V16.25L10 18.75L11.25 20V22.4137C6.32625 21.795 2.5 17.59 2.5 12.5ZM20.4125 18.5912C19.5962 17.9337 18.3587 17.5 17.5 17.5V16.25C17.5 15.587 17.2366 14.9511 16.7678 14.4822C16.2989 14.0134 15.663 13.75 15 13.75H10V10C10.663 10 11.2989 9.73661 11.7678 9.26777C12.2366 8.79893 12.5 8.16304 12.5 7.5V6.25H13.75C14.413 6.25 15.0489 5.98661 15.5178 5.51777C15.9866 5.04893 16.25 4.41304 16.25 3.75V3.23625C19.91 4.7225 22.5 8.3125 22.5 12.5C22.4998 14.7059 21.7653 16.8489 20.4125 18.5912V18.5912Z" fill="currentcolor" />
-                                                </svg>
-                                            </a>
-                                            <div class="ms-3 flex-grow-1">
-                                                <h6>ການເຂົ້າເຖີງ</h6>
-                                                <small class="mb-0">ສະຖານະທັງໝົດ</small>
-                                            </div>
-                                            <p>268</p>
-                                        </li>
-                                        <li class="d-flex mb-4 align-items-center">
-                                            <a href="#" class="text-primary p-2 bg-soft-primary avatar-40">
-                                                <svg width="21" viewBox="0 0 21 25" fill="currentcolor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M8.28862 23.998C6.5536 23.0666 0.39428 16.9198 0.0472757 14.6845C-0.299728 12.4492 1.34854 12.201 2.21605 12.3563C2.86023 12.4716 4.22192 14.213 4.88033 15.102C4.99677 15.2592 5.25233 15.1761 5.25233 14.9805V2.45522C5.25233 1.92495 5.37705 1.38987 5.70187 0.970726C7.00017 -0.704531 8.17055 0.0979736 8.82881 1.06838C9.07446 1.43052 9.15613 1.87233 9.15613 2.30992V7.24655C9.15613 6.632 9.30246 5.95667 9.84659 5.67102C10.3585 5.40232 10.9274 5.44638 11.4379 5.6202C12.2659 5.90218 12.6262 6.80571 12.6262 7.68044V8.22845C12.6262 7.58252 12.7966 6.89845 13.3347 6.54112C14.1148 6.02303 14.9402 6.17499 15.5954 6.52063C16.2666 6.87472 16.53 7.65553 16.53 8.41437V10.9847C16.53 9.75556 16.9063 8.20999 18.1336 8.27669C18.4136 8.2919 18.6911 8.36319 18.9501 8.46494C19.684 8.75335 20.0368 9.53366 20.0899 10.3204C20.2518 12.7177 20.5288 17.922 20 19.3412C19.306 21.2039 18.265 22.601 17.8312 23.0666C14.3612 26.0469 10.0236 24.9293 8.28862 23.998Z" fill="currentcolor" />
-                                                </svg>
-                                            </a>
-                                            <div class="ms-3 flex-grow-1">
-                                                <h6>ການສັ່ງຊື້ລາຍວັນ</h6>
-                                                <small class="mb-0">ສັ່ງຊືື້ຂອງມື້ນີ້
-                                                </small>
-                                            </div>
-                                            <p>4323</p>
-                                        </li>
-                                        <li class="d-flex mb-4 align-items-center">
-                                            <a href="#" class="text-secondary p-2 bg-soft-secondary avatar-40">
-                                                <svg width="21" viewBox="0 0 21 22" fill="currentcolor" xmlns="http://www.w3.org/2000/svg">
-                                                    <rect y="12" width="5" height="10" fill="currentcolor" />
-                                                    <rect x="8" y="6" width="5" height="16" fill="currentcolor" />
-                                                    <rect x="16" width="5" height="22" fill="currentcolor" />
-                                                </svg>
-                                            </a>
-                                            <div class="ms-3 flex-grow-1">
-                                                <h6>ຄວາມປະທັບໃຈ</h6>
-                                                <small class="mb-0">Premium</small>
-                                            </div>
-                                            <p>6565</p>
-                                        </li>
-                                        <li class="d-flex mb-4 align-items-center">
-                                            <a href="#" class="text-primary p-2 bg-soft-primary avatar-40">
-                                                <svg width="21" viewBox="0 0 25 20" fill="currentcolor" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M12.5 15V19H19H6" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" />
-                                                    <path d="M0 0H25V15H0V0Z" fill="currentcolor" />
-                                                </svg>
-                                            </a>
-                                            <div class="ms-3 flex-grow-1">
-                                                <h6>Google Ads</h6>
-                                                <small class="mb-0">Services</small>
-                                            </div>
-                                            <p>32423</p>
-                                        </li>
-                                        <li class="d-flex mb-4 align-items-center">
-                                            <a href="#" class="text-secondary p-2 bg-soft-secondary avatar-40">
-                                                <svg width="21" viewBox="0 0 24 26" fill="currentcolor" xmlns="http://www.w3.org/2000/svg">
-                                                    <rect y="17" width="5" height="9" rx="1" fill="currentcolor" />
-                                                    <rect x="9" y="12" width="5" height="14" rx="1" fill="currentcolor" />
-                                                    <rect x="19" y="7" width="5" height="19" rx="1" fill="currentcolor" />
-                                                    <path d="M23.384 0.901793L17.5217 1.37724L20.9559 6.01828L23.384 0.901793ZM1.29741 16.4019L19.9508 3.82009L19.3559 3.01623L0.702586 15.5981L1.29741 16.4019Z" fill="currentcolor" />
-                                                </svg>
-                                            </a>
-                                            <div class="ms-3 flex-grow-1">
-                                                <h6>ລາຍໄດ້</h6>
-                                                <small class="mb-0">ສະເລ່ຍການຂາຍທັງໝົດ</small>
-                                            </div>
-                                            <p>268</p>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-lg-12">
-                            <div class="card bg-primary">
-                                <div class="card-header bg-primary">
-                                    <h4 class="text-white">Gallery</h4>
-                                </div>
-                                <div class="card-body p-0">
-                                    <div class="swiper-container scale-item-slider d-slider1">
-                                        <div class="swiper-wrapper">
-                                            <div class="swiper-slide">
-                                                <div class="d-flex justify-content-center align-items-center">
-                                                    <img src="../assets/images/dashboard/02.png" class="img-fluid w-75" alt="img8">
-                                                </div>
-                                            </div>
-                                            <div class="swiper-slide">
-                                                <div class="d-flex justify-content-center align-items-center">
-                                                    <img src="../assets/images/dashboard/03.png" class="img-fluid w-75" alt="img8">
-                                                </div>
-                                            </div>
-                                            <div class="swiper-slide">
-                                                <div class="d-flex justify-content-center align-items-center">
-                                                    <img src="../assets/images/dashboard/04.png" class="img-fluid w-75" alt="img8">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="swiper-button-next text-white">
-                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M13.5857 3.53148C13.3269 3.20803 12.8549 3.15559 12.5315 3.41435C12.208 3.67311 12.1556 4.14507 12.4143 4.46852L13.5857 3.53148ZM18 10.25L18.5857 10.7185L18.9605 10.25L18.5857 9.78148L18 10.25ZM12.4143 16.0315C12.1556 16.3549 12.208 16.8269 12.5315 17.0857C12.8549 17.3444 13.3269 17.292 13.5857 16.9685L12.4143 16.0315ZM12.4143 4.46852L17.4143 10.7185L18.5857 9.78148L13.5857 3.53148L12.4143 4.46852ZM17.4143 9.78148L12.4143 16.0315L13.5857 16.9685L18.5857 10.7185L17.4143 9.78148Z" fill="currentColor" />
-                                                <path d="M3 9.5C2.58579 9.5 2.25 9.83579 2.25 10.25C2.25 10.6642 2.58579 11 3 11V9.5ZM17.5 9.5H3V11H17.5V9.5Z" fill="currentColor" />
-                                            </svg>
-                                        </div>
-                                        <div class="swiper-button-prev text-white">
-                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M7.41435 3.53148C7.67311 3.20803 8.14507 3.15559 8.46852 3.41435C8.79197 3.67311 8.84441 4.14507 8.58565 4.46852L7.41435 3.53148ZM3 10.25L2.41435 10.7185L2.03953 10.25L2.41435 9.78148L3 10.25ZM8.58565 16.0315C8.84441 16.3549 8.79197 16.8269 8.46852 17.0857C8.14507 17.3444 7.67311 17.292 7.41435 16.9685L8.58565 16.0315ZM8.58565 4.46852L3.58565 10.7185L2.41435 9.78148L7.41435 3.53148L8.58565 4.46852ZM3.58565 9.78148L8.58565 16.0315L7.41435 16.9685L2.41435 10.7185L3.58565 9.78148Z" fill="currentColor" />
-                                                <path d="M18 9.5C18.4142 9.5 18.75 9.83579 18.75 10.25C18.75 10.6642 18.4142 11 18 11V9.5ZM3.5 9.5H18V11H3.5V9.5Z" fill="currentColor" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="ms-3">
+                        <div class="stat-label">ຍອດຂາຍວັນນີ້</div>
+                        <div class="stat-value"><?= number_format($today_data['v']) ?> <span class="fs-6 fw-normal text-muted">ກີບ</span></div>
+                        <div class="stat-meta"><?= (int)$today_data['c'] ?> ບິນ</div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card stat-card success">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box">
+                        <svg width="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14l-5-5h3V9h4v3h3l-5 5z"/></svg>
+                    </div>
+                    <div class="ms-3">
+                        <div class="stat-label">ຍອດຂາຍເດືອນນີ້</div>
+                        <div class="stat-value"><?= number_format($month_data['v']) ?> <span class="fs-6 fw-normal text-muted">ກີບ</span></div>
+                        <div class="stat-meta"><?= (int)$month_data['c'] ?> ບິນ</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card stat-card info">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box">
+                        <svg width="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6H4V4h16v2zm-2 4H6v10h12V10z"/></svg>
+                    </div>
+                    <div class="ms-3">
+                        <div class="stat-label">ສິນຄ້າທັງໝົດ</div>
+                        <div class="stat-value"><?= $prod_count ?></div>
+                        <div class="stat-meta">ລາຍການ</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <a href="inventory.php?low=1" class="text-decoration-none">
+            <div class="card stat-card danger">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box">
+                            <svg width="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm-1 6v6h2V8h-2zm0 8v2h2v-2h-2z"/></svg>
+                        </div>
+                        <div class="ms-3">
+                            <div class="stat-label">ສິນຄ້າໃກ້ໝົດ</div>
+                            <div class="stat-value text-danger"><?= $low_count ?></div>
+                            <div class="stat-meta">ຕ້ອງເຕີມສະຕັອກ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0">ຍອດຂາຍ 7 ວັນຍ້ອນຫຼັງ</h5>
+                    <small class="text-muted">ໜ່ວຍ: ກີບ</small>
+                </div>
+                <span class="badge bg-soft-primary text-primary">7 ວັນ</span>
+            </div>
+            <div class="card-body">
+                <?php $hasData = array_sum($chartValues) > 0; ?>
+                <?php if ($hasData): ?>
+                    <canvas id="salesChart" height="120"></canvas>
+                <?php else: ?>
+                    <div class="empty-state text-center py-5">
+                        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                            <rect x="10" y="14" width="60" height="48" rx="6" stroke="#cbd5e1" stroke-width="2"/>
+                            <path d="M18 50l10-12 8 6 12-18 14 14" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="28" cy="38" r="2.5" fill="#94a3b8"/>
+                            <circle cx="36" cy="44" r="2.5" fill="#94a3b8"/>
+                            <circle cx="48" cy="26" r="2.5" fill="#94a3b8"/>
+                            <circle cx="62" cy="40" r="2.5" fill="#94a3b8"/>
+                        </svg>
+                        <div class="empty-title mt-3">ຍັງບໍ່ມີຂໍ້ມູນການຂາຍ</div>
+                        <div class="empty-sub text-muted small mb-3">ເລີ່ມການຂາຍຄັ້ງທຳອິດເພື່ອເຫັນກຣາຟ</div>
+                        <a href="pos.php" class="btn btn-primary">→ ໄປຫາໜ້າຂາຍ</a>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">🏆 ສິນຄ້າຂາຍດີ (ເດືອນນີ້)</h5>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    <?php $rank = 1; while ($t = $topRes->fetch_assoc()):
+                        $colors = ['#f59e0b','#64748b','#cd7f32','#5e72e4','#5e72e4','#5e72e4','#5e72e4'];
+                        $color = $colors[$rank-1] ?? '#5e72e4';
+                    ?>
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2">
+                            <div class="d-flex align-items-center">
+                                <span class="me-3 fw-bold text-center" style="color:<?= $color ?>;font-size:1.1rem;width:28px">#<?= $rank++ ?></span>
+                                <div>
+                                    <div class="fw-semibold" style="font-size:.92rem"><?= e($t['product_name']) ?></div>
+                                    <small class="text-muted"><?= (int)$t['total_qty'] ?> ຊິ້ນ</small>
+                                </div>
+                            </div>
+                            <div class="text-end fw-semibold text-primary" style="font-size:.92rem"><?= number_format($t['total_revenue']) ?></div>
+                        </li>
+                    <?php endwhile; ?>
+                    <?php if ($topRes->num_rows === 0): ?>
+                        <li class="list-group-item text-center text-muted py-4">ຍັງບໍ່ມີຂໍ້ມູນ</li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php if ($hasData): ?>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const ctx = document.getElementById('salesChart').getContext('2d');
+const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+gradient.addColorStop(0, 'rgba(94,114,228,0.3)');
+gradient.addColorStop(1, 'rgba(94,114,228,0.0)');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: <?= json_encode($chartLabels) ?>,
+        datasets: [{
+            label: 'ຍອດຂາຍ',
+            data: <?= json_encode($chartValues) ?>,
+            borderColor: '#5e72e4',
+            backgroundColor: gradient,
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#5e72e4',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 5,
+            borderWidth: 3,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() }, grid: { color: '#f0f1f5' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+</script>
+<?php endif; ?>

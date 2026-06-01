@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Cafe Management System</title>
+    <title>SMS</title>
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="../../assets/images/favicon.ico" />
@@ -31,7 +31,7 @@
                                 <!--Logo start-->
                                 <img src="../../assets/logo.png" class="sidebar-color-logo  "width="95">
                                 <!--logo End-->
-                                <h3 class="logo-title ms-2 text-primary">Cafe I&U</h3>
+                                <h3 class="logo-title ms-2 text-primary">SMS</h3>
                             </a>
                             <img src="../../assets/images/avatars/01.png" class="rounded avatar-80 mb-3" alt="">
                             <h2 class="mb-2">Hi ! Austin Robertson</h2>

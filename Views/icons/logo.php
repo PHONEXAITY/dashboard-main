@@ -4,7 +4,7 @@
                 <!--Logo start-->
                 <img src="../../assets/logo.png" class="sidebar-color-logo  " width="95">
                 <!--logo End-->
-                <h4 class="logo-title m-0">Cafe I&U</h4>
+                <h4 class="logo-title m-0">SMS</h4>
             </a>
             <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
                 <i class="icon">
